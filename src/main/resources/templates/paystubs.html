@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="https://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<link th:href="@{/styles/global.css}" rel="stylesheet" />
+    <title>KWIX | Paystub Data Entry</title>
+  </head>
+  <body>
+	<nav>
+		<a href="/">KWIX</a>
+		<a href="/employees">Employees</a>
+		<a href="/payroll">Payroll</a>
+		<span class="ver" th:text="${ver}"></span>
+	</nav>
+	<div class="content">
+		<a href="/payroll" class="arrow">←</a>
+		<h2 th:text="'Manage Paystubs For ' + ${paystub.fullName}"></h2>
+		<hr />
+		<div th:if="${userMessage}" th:utext="${userMessage}" ></div>
+		<div class="form">
+			<form method="post" th:action="@{/paystubs/{id}(id=${employee.id})}" th:object="${paystub}">
+				<label>Employee Id:</label>
+				<input id="employeeId" required readonly th:field="*{employeeId}" th:value="${paystub.employeeId}" type="text"/>
+				<label>Name:</label>
+				<input id="name" required readonly th:field="*{fullName}" th:value="${paystub.getFullName()}" type="text"/>
+				<label>Select Jobsite:</label>
+				<select id="jobsite" th:field="*{jobsite}">
+					<option th:each="siteOpt : ${jobsites}"
+						th:value="${siteOpt.name()}"
+						th:text="${siteOpt.name()}">
+					</option>
+				</select>
+				<label>Hourly Pay:</label>
+				<input id="pay" placeholder="$0.00" required th:field="*{pay}" th:value="${employee.pay}" type="text"/>
+				<label>Hours Worked:</label>
+				<input id="hours" placeholder="0 Hrs" required th:field="*{hoursWorked}" type="text"/>
+				<label>Day:</label>
+				<input id="day" placeholder="mm/dd/yyyy" required th:field="*{dayWorked}" type="text"/>
+			    <input class="add btn" type="submit" value="Add">
+			    <input class="btn" type="reset" value="Reset">
+			</form>
+		</div>
+		<div>
+			<table>
+				<tr>
+					<th>Total Hours</th>
+			        <th>Total Gross Pay</th>
+				</tr>
+				<tr th:if="${paystubs.isEmpty()}"></tr>
+				<tr th:unless="${paystubs.isEmpty()}">
+					<td th:text="${extStubSrv.getAllHours(paystubs)}"></td>
+					<td th:text="'$' + ${payrollCtrlr.roundMoney(extStubSrv.getTotalPay(extStubSrv.getAllPay(paystubs),extStubSrv.getAllHours(paystubs)))}"></td>
+				</tr>
+			</table>
+		</div>
+		<div>
+			<table>
+			    <tr>
+					<th>Day Worked</th>
+			        <th>Jobsite Worked</th>
+					<th>Pay</th>
+					<th>Hours Worked</th>
+			        <th>Entered</th>
+			        <th>Last Modified</th>
+			        <th>Edit</th>
+			    </tr>
+			    <tr th:if="${paystubs.isEmpty()}">
+			        <td colspan="7">No paystubs have been entered...</td>
+			    </tr>
+			    <tr th:unless="${paystubs.isEmpty()}" th:each="paystub : ${paystubs}">
+					<td th:text="${payrollCtrlr.formatedDate(paystub.dayWorked)}"></td>
+					<td th:text="${paystub.jobsite}"></td>
+					<td th:text="${paystub.pay}"></td>
+					<td th:text="${paystub.hoursWorked}"></td>
+			        <td th:text="${paystub.createAt}"></td>
+			        <td th:text="${paystub.updateAt}"></td>
+			        <td class="edit-td"><a th:href="@{/paystub/{id}(id=${paystub.id})}" class="edit">✏</a></td>
+			    </tr>
+			</table>
+		</div>
+	</div>
+  </body>
+</html>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="https://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<link th:href="@{/styles/global.css}" rel="stylesheet" />
+    <title>KWIX | Payroll</title>
+  </head>
+  <body>
+	<nav>
+		<a href="/">KWIX</a>
+		<a href="/employees">Employees</a>
+		<a href="/payroll">Payroll</a>
+		<span class="ver" th:text="${ver}"></span>
+	</nav>
+	<div class="content">
+		<h2>Manage Payroll</h2>
+		<a class="del arrow smaller" href="/deletedpaystubs">Recently Deleted →</a>
+		<hr />
+		<div>
+			<h3>Employees:</h3>
+			<table>
+			    <tr>
+			        <th>Id</th>
+			        <th>Name</th>
+			        <th>Phone</th>
+					<th>Pay</th>
+			        <th>Created</th>
+			        <th>Last Modified</th>
+			        <th>Add Hours</th>
+			    </tr>
+			    <tr th:if="${employees.isEmpty()}">
+			        <td colspan="7">No Employees Found...</td>
+					<td colspan="7"><a href="employees">Add</a></td>
+			    </tr>
+			    <tr th:unless="${employees.isEmpty()}" th:each="employee : ${employees}">
+			        <td>
+						<a th:href="@{employee/{id}(id=${employee.id})}">
+							<p th:text="${employee.id}"></p>
+						</a>
+					</td>
+					<td th:text="${employee.getFullName()}"></td>
+			        <td th:text="${employee.phone}"></td>
+					<td th:text="${employee.pay}"></td>
+			        <td th:text="${empController.formatedDate(employee.createAt)}"></td>
+			        <td th:text="${empController.formatedDate(employee.updateAt)}"></td>
+			        <td class="edit-td"><a th:href="@{paystubs/{id}(id=${employee.id})}" class="edit">+</a></td>
+			    </tr>
+			</table>
+			<h3>Paystubs:</h3>
+			<div th:if="${paystubs.isEmpty()}">No paystubs found...</div>
+			<div th:unless="${paystubs.isEmpty()}">
+				<table>
+					<tr>
+						<th>Employee</th>
+						<th>Day Worked</th>
+				        <th>Jobsite Worked</th>
+						<th>Pay</th>
+						<th>Hours Worked</th>
+				        <th>Entered</th>
+				        <th>Last Modified</th>
+				        <th>Edit</th>
+				    </tr>
+				    <tr th:unless="${paystubs.isEmpty()}" th:each="paystub : ${paystubs}">
+						<td th:text="${paystub.fullName}"></td>
+						<td th:text="${payrollCtrlr.formatedDate(paystub.dayWorked)}"></td>
+						<td th:text="${paystub.jobsite}"></td>
+						<td th:text="${paystub.pay}"></td>
+						<td th:text="${paystub.hoursWorked}"></td>
+				        <td th:text="${paystub.createAt}"></td>
+				        <td th:text="${paystub.updateAt}"></td>
+				        <td class="edit-td"><a th:href="@{/paystub/{id}(id=${paystub.id})}" class="edit">✏</a></td>
+				    </tr>
+				</table>
+				<button type="button" class="exp" th:onclick="alert('Not available in demo version. \nThis Feature is for paid users only...')">Export</button>
+			</div>
+		</div>
+	</div>
+  </body>
+</html>

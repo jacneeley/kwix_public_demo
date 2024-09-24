@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="https://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<link th:href="@{/styles/global.css}" rel="stylesheet" />
+    <title>KWIX | Recently Deleted Employees</title>
+  </head>
+  <body>
+	<nav>
+		<a href="/">KWIX</a>
+		<a href="/employees">Employees</a>
+		<a href="/payroll">Payroll</a>
+		<span class="ver" th:text="${ver}"></span>
+	</nav>
+	<div class="content">
+		<a href="/employees" class="arrow">←</a>
+		<h2>Recently Deleted Employees</h2>
+		<hr />
+		<p>**CAUTION: Deleting an employee here is permanent!**</p>
+		<div th:if="${userMessage}" th:utext="${userMessage}" ></div>
+		<div>
+			<table>
+			    <tr>
+			        <th>Id</th>
+			        <th>Name</th>
+			        <th>Phone</th>
+					<th>Pay</th>
+			        <th>Created</th>
+			        <th>Deleted</th>
+			        <th>Restore</th>
+					<th>**Delete**</th>
+			    </tr>
+			    <tr th:if="${employees.isEmpty()}">
+			        <td colspan="7">No Employees Found...</td>
+			    </tr>
+			    <tr th:unless="${employees.isEmpty()}" th:each="employee : ${employees}">
+			        <td th:text="${employee.id}"></td>
+					<td th:text="${employee.getFullName()}"></td>
+			        <td th:text="${employee.phone}"></td>
+					<td th:text="${employee.pay}"></td>
+			        <td th:text="${employee.createAt}"></td>
+			        <td th:text="${employee.updateAt}"></td>
+			        <td><button type="button" class="restore" th:onclick="window.location.href='/restoreemployee/'+[[${employee.id}]]">Restore</button></td>
+					<td><button id="delete" type="button" class="delete" style="display:block; margin:0 auto;" th:onclick="window.location.href='/deletedemployees/'+[[${employee.id}]]">Delete</button></td>
+			    </tr>
+			</table>
+		</div>
+	</div>
+  </body>
+</html>
